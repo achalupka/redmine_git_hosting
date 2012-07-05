@@ -39,9 +39,19 @@ module GitHosting
 					return GitHosting::git_exec()
 				end
 			end
-
-
+                              
+			@@badmatch=/[^\.\-\w_\:=]/
 			def scm_cmd_with_sudo(*args, &block)
+                        	# Prevent execution vulnerability
+                        	badargs=args.select{|a| a.match(@@badmatch)}
+                        	if badargs.length > 0
+                                	GitHosting.logger.error "scm_cmd_with_sudo(): Removing Suspicious characters in arguments:" 
+                                	badargs.each do |a| 
+                              			old_a = a.clone
+                              			new_a = a.gsub!(@@badmatch, '')
+                              			GitHosting.logger.error "  Changing \"#{old_a}\" to \"#{new_a}\""
+                              		end
+                            	end
 
 				max_cache_time     = (Setting.plugin_redmine_git_hosting['gitCacheMaxTime']).to_i             # in seconds, default = 60
 				max_cache_elements = (Setting.plugin_redmine_git_hosting['gitCacheMaxElements']).to_i         # default = 100
