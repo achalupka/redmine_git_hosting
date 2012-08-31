@@ -49,7 +49,6 @@ class GitHostingObserver < ActiveRecord::Observer
         end
 
 	def after_create(object)
-		GitHosting.logger.debug "On GitHostingObserver.after_create for Project" + (object.is_a?(Project))
 		if not object.is_a?(Project)
 			update_repositories(object)
 		end
